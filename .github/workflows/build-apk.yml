@@ -8,9 +8,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Baixar o código
         uses: actions/checkout@v4
+
+      - name: Extrair projeto Android
+        run: unzip -o FileMaster-pronto-para-compilar.zip
 
       - name: Configurar Java
         uses: actions/setup-java@v4
@@ -18,13 +22,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK
+      - name: Configurar Android SDK
         uses: android-actions/setup-android@v4
         with:
           accept-android-sdk-licenses: true
           log-accepted-android-sdk-licenses: false
 
-      - name: Instalar componentes do Android
+      - name: Instalar componentes Android
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Instalar Gradle
@@ -32,13 +36,13 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Compilar APK de teste
-        run: gradle assembleDebug
+      - name: Compilar APK
+        run: cd filemaster && gradle assembleDebug
 
       - name: Disponibilizar APK para baixar
         uses: actions/upload-artifact@v4
         with:
           name: FileMaster-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: filemaster/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
